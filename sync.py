@@ -65,10 +65,10 @@ def adb_pull_all(destination: Path, files_to_sync: list[Path], remote_base: Path
 
 
 def main():
-    parser = ArgumentParser(description="Sync files to Android device")
-    parser.add_argument("source", type=Path, help="Source file or directory")
+    parser = ArgumentParser(description="Sync files from Android device")
+    parser.add_argument("source", type=Path, help="Source file or directory on Android device")
     parser.add_argument(
-        "destination", type=Path, help="Destination directory on Android device"
+        "destination", type=Path, help="Destination directory on local machine"
     )
     parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
     args = parser.parse_args()
