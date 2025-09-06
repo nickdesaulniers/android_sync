@@ -68,6 +68,7 @@ def adb_pull_all(destination: Path, files_to_sync: list[Path], remote_base: Path
     print(f"Pulled {len(files_to_sync) - failures} file(s) successfully in {time.time() - start_time:.2f} seconds.")
     if failures > 0:
         print(f"Failed to pull {failures} file(s).", file=sys.stderr)
+        sys.exit(1)
 
 
 def main():
