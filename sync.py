@@ -15,17 +15,26 @@ def get_remote_files(source: Path) -> list[Path]:
         err = stderr.decode().strip()
         print(f"Error getting remote files: {err}", file=sys.stderr)
         if "adb: no devices/emulators found" in err:
-            print("Make sure your Android device is connected and ADB is set up correctly.", file=sys.stderr)
+            print(
+                "Make sure your Android device is connected and ADB is set up correctly.",
+                file=sys.stderr,
+            )
             print("Enable developer options by tapping on", file=sys.stderr)
             print("Settings > About phone > Build number", file=sys.stderr)
-            print("seven times. Then enable USB debugging in Settings > Developer options.", file=sys.stderr)
+            print(
+                "seven times. Then enable USB debugging in Settings > Developer options.",
+                file=sys.stderr,
+            )
         sys.exit(1)
     return [Path(line) for line in stdout.decode().splitlines()][1:]
 
 
 def get_local_files(destination: Path) -> list[Path]:
     if not destination.exists():
-        print(f"Destination file or directory does not exist: {destination}", file=sys.stderr)
+        print(
+            f"Destination file or directory does not exist: {destination}",
+            file=sys.stderr,
+        )
         sys.exit(1)
     if not destination.is_dir():
         print(f"Destination is not a directory: {destination}", file=sys.stderr)
@@ -33,7 +42,7 @@ def get_local_files(destination: Path) -> list[Path]:
     return [Path(line) for line in destination.glob("**/*") if line.is_file()]
 
 
-def get_files_to_sync(remote_files: list[Path], local_files: list[Path]) -> list[Path]:
+def get_files_to_sync(remote_files: list[Path], local_files: list[Path]) -> list[str]:
     remote_set = set([path.name for path in remote_files])
     local_set = set([path.name for path in local_files])
     return list(remote_set - local_set)
@@ -54,7 +63,9 @@ def adb_pull_one(remote_path: Path, local_path: Path, verbose: bool) -> bool:
     return True
 
 
-def adb_pull_all(destination: Path, files_to_sync: list[Path], remote_base: Path, verbose: bool):
+def adb_pull_all(
+    destination: Path, files_to_sync: list[Path], remote_base: Path, verbose: bool
+):
     print(f"Starting to pull {len(files_to_sync)} file(s)...")
     start_time = time.time()
     failures = 0
@@ -65,7 +76,9 @@ def adb_pull_all(destination: Path, files_to_sync: list[Path], remote_base: Path
         if not adb_pull_one(remote_path, local_path, verbose):
             failures += 1
 
-    print(f"Pulled {len(files_to_sync) - failures} file(s) successfully in {time.time() - start_time:.2f} seconds.")
+    print(
+        f"Pulled {len(files_to_sync) - failures} file(s) successfully in {time.time() - start_time:.2f} seconds."
+    )
     if failures > 0:
         print(f"Failed to pull {failures} file(s).", file=sys.stderr)
         sys.exit(1)
@@ -73,11 +86,15 @@ def adb_pull_all(destination: Path, files_to_sync: list[Path], remote_base: Path
 
 def main():
     parser = ArgumentParser(description="Sync files from Android device")
-    parser.add_argument("source", type=Path, help="Source file or directory on Android device")
+    parser.add_argument(
+        "source", type=Path, help="Source file or directory on Android device"
+    )
     parser.add_argument(
         "destination", type=Path, help="Destination directory on local machine"
     )
-    parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
+    parser.add_argument(
+        "-v", "--verbose", action="store_true", help="Enable verbose output"
+    )
     args = parser.parse_args()
 
     print(f"Syncing {args.source} to {args.destination}.")
@@ -89,7 +106,10 @@ def main():
     files_to_sync = get_files_to_sync(remote_files, local_files)
     print(f"{len(files_to_sync)} file(s) to sync.")
     if files_to_sync:
-        adb_pull_all(args.destination, files_to_sync, remote_files[0].parent, args.verbose)
+        adb_pull_all(
+            args.destination, files_to_sync, remote_files[0].parent, args.verbose
+        )
+
 
 if __name__ == "__main__":
     main()
