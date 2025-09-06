@@ -7,24 +7,28 @@ from pathlib import Path
 from subprocess import PIPE, Popen
 
 
+def print_adb_help(stderr: bytes):
+    err = stderr.decode().strip()
+    print(f"Error getting remote files: {err}", file=sys.stderr)
+    if "adb: no devices/emulators found" in err:
+        print(
+            "Make sure your Android device is connected and ADB is set up correctly.",
+            file=sys.stderr,
+        )
+        print("Enable developer options by tapping on", file=sys.stderr)
+        print("Settings > About phone > Build number", file=sys.stderr)
+        print(
+            "seven times. Then enable USB debugging in Settings > Developer options.",
+            file=sys.stderr,
+        )
+
+
 def get_remote_files(source: Path) -> list[Path]:
     command = f"adb shell find {source}"
     process = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
     if process.returncode != 0:
-        err = stderr.decode().strip()
-        print(f"Error getting remote files: {err}", file=sys.stderr)
-        if "adb: no devices/emulators found" in err:
-            print(
-                "Make sure your Android device is connected and ADB is set up correctly.",
-                file=sys.stderr,
-            )
-            print("Enable developer options by tapping on", file=sys.stderr)
-            print("Settings > About phone > Build number", file=sys.stderr)
-            print(
-                "seven times. Then enable USB debugging in Settings > Developer options.",
-                file=sys.stderr,
-            )
+        print_adb_help(stderr)
         sys.exit(1)
     return [Path(line) for line in stdout.decode().splitlines()][1:]
 
