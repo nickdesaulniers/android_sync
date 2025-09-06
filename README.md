@@ -21,3 +21,8 @@ options:
 ```sh
 $ ./sync.py /sdcard/DCIM/Camera/ ~/Backups/nick/Camera
 ```
+
+### One time setup on device
+1. [Enable Developer Mode](https://developer.android.com/studio/debug/dev-options#enable)
+2. [Enable USB (or Wireless) Debugging](https://developer.android.com/studio/debug/dev-options#Enable-debugging)
+3. Accept "Toast" about new host connection.
